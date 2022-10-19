@@ -5,7 +5,6 @@ public class Line {
     private final int x1, y1;
     private final int x2, y2;
 
-    // TODO: color???
     public Line(int x1, int y1, int x2, int y2) {
         this.x1 = x1;
         this.y1 = y1;

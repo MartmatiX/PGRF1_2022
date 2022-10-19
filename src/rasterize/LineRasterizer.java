@@ -14,6 +14,6 @@ public abstract class LineRasterizer {
         drawLine(line.getX1(), line.getY1(), line.getX2(), line.getY2());
     }
 
-    protected void drawLine(int x1, int y1, int x2, int y2) {
+    public void drawLine(int x1, int y1, int x2, int y2) {
     }
 }

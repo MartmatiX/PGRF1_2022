@@ -1,4 +1,6 @@
 import model.Line;
+import model.Point;
+import model.Triangle;
 import rasterize.LineRasterizer;
 import rasterize.FilledLineRasterizer;
 import rasterize.RasterBufferImage;
@@ -13,6 +15,13 @@ public class Canvas {
 
     private final LineRasterizer lineRasterizer;
     private final RasterBufferImage raster;
+
+    private int x_start;
+    private int y_start;
+
+    private boolean tPressed = false;
+
+    Triangle t = new Triangle();
 
     public Canvas(int width, int height) {
 
@@ -44,18 +53,42 @@ public class Canvas {
         panel.requestFocus();
         panel.requestFocusInWindow();
 
-        final int[] x_start = new int[1];
-        final int[] y_start = new int[1];
+        panel.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent keyEvent) {
+                super.keyPressed(keyEvent);
+                if (keyEvent.getKeyCode() == KeyEvent.VK_T) {
+                    if (tPressed) {
+                        System.out.println("You exited triangle mode: Triangle was cleared.\nYou can start drawing lines.\n");
+                    } else {
+                        raster.clear();
+                        panel.repaint();
+                        t = new Triangle();
+                        System.out.println("You entered triangle mode.\n");
+                    }
+                    tPressed = !tPressed;
+                }
+            }
+        });
+
+        // usecka, trojuhelnik
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                raster.clear();
-                x_start[0] = e.getX();
-                y_start[0] = e.getY();
-                raster.setPixel(x_start[0], y_start[0], 0xfffff);
-                panel.repaint();
+                if (!tPressed) {
+                    raster.clear();
+                    x_start = e.getX();
+                    y_start = e.getY();
+                    raster.setPixel(x_start, y_start, 0xfffff);
+                    panel.repaint();
+                } else {
+                    if (t.getSize() < 2) {
+                        t.addPoint(new Point(e.getX(), e.getY()));
+                        System.out.println("Point: " + t.getSize() + " added.\n");
+                    }
+                }
             }
         });
 
@@ -63,13 +96,22 @@ public class Canvas {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
-
-                raster.clear();
-
-                Line line = new Line(x_start[0], y_start[0], e.getX(), e.getY());
-                lineRasterizer.rasterize(line);
-
-                panel.repaint();
+                if (!tPressed) {
+                    raster.clear();
+                    Line line = new Line(x_start, y_start, e.getX(), e.getY());
+                    lineRasterizer.rasterize(line);
+                    panel.repaint();
+                } else {
+                    if (t.getSize() >= 2) {
+                        Point p = new Point(e.getX(), e.getY());
+                        t.addPoint(p);
+                        raster.clear();
+                        if (t.getSize() >= 3) {
+                            t.drawTriangle(lineRasterizer);
+                            panel.repaint();
+                        }
+                    }
+                }
             }
         });
 
