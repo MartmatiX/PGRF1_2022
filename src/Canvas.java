@@ -1,7 +1,6 @@
 import model.Line;
-import rasterize.FilledLineRasterizer;
 import rasterize.LineRasterizer;
-import rasterize.NaiveLineAlgorithm;
+import rasterize.FilledLineRasterizer;
 import rasterize.RasterBufferImage;
 
 import javax.swing.*;
@@ -10,30 +9,23 @@ import java.awt.event.*;
 
 public class Canvas {
 
-    private int width;
-    private int height;
+    private final JPanel panel;
 
-    private JFrame frame;
-    private JPanel panel;
-
-    private LineRasterizer lineRasterizer;
-    private RasterBufferImage raster;
+    private final LineRasterizer lineRasterizer;
+    private final RasterBufferImage raster;
 
     public Canvas(int width, int height) {
-        this.width = width;
-        this.height = height;
 
-        frame = new JFrame();
+        JFrame frame = new JFrame();
 
         frame.setLayout(new BorderLayout());
         frame.setResizable(false);
         frame.setTitle("Task1 Malir");
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setSize(this.width, this.height);
+        frame.setSize(width, height);
 
-        raster = new RasterBufferImage(this.width, this.height);
-        //lineRasterizer = new FilledLineRasterizer(raster);
-        lineRasterizer = new NaiveLineAlgorithm(raster);
+        raster = new RasterBufferImage(width, height);
+        lineRasterizer = new FilledLineRasterizer(raster);
 
         panel = new JPanel() {
             @Override
@@ -42,7 +34,7 @@ public class Canvas {
                 raster.present(graphics);
             }
         };
-        panel.setPreferredSize(new Dimension(this.width, this.height));
+        panel.setPreferredSize(new Dimension(width, height));
 
         frame.add(panel, BorderLayout.CENTER);
 
@@ -57,11 +49,11 @@ public class Canvas {
 
         panel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                super.mouseClicked(mouseEvent);
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
                 raster.clear();
-                x_start[0] = mouseEvent.getX();
-                y_start[0] = mouseEvent.getY();
+                x_start[0] = e.getX();
+                y_start[0] = e.getY();
                 raster.setPixel(x_start[0], y_start[0], 0xfffff);
                 panel.repaint();
             }
