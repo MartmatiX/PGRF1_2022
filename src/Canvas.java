@@ -17,13 +17,14 @@ public class Canvas {
 
     private final LineRasterizer lineRasterizer;
     private final RasterBufferImage raster;
-    private final LineRasterizer dashedLineRasterizer;
+    private final DashedLine dashedLineRasterizer;
     private final PolygonDrawer polygonDrawer;
 
     private int x_start;
     private int y_start;
 
     private int flag = 1;
+    private int lineFlag = 1;
 
     Triangle triangle = new Triangle();
     Polygon polygon = new Polygon();
@@ -31,7 +32,6 @@ public class Canvas {
     private final int startPointColor = 0xfffff;
 
     public Canvas(int width, int height) {
-
         JFrame frame = new JFrame();
 
         frame.setLayout(new BorderLayout());
@@ -54,7 +54,26 @@ public class Canvas {
         };
         panel.setPreferredSize(new Dimension(width, height));
 
-        frame.add(panel, BorderLayout.CENTER);
+        frame.add(panel, BorderLayout.WEST);
+
+        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 15));
+
+        JLabel controls = new JLabel("<html>" +
+                "line mode: L<br/>" +
+                "triangle mode: T<br/>" +
+                "dashed line mode: D<br/>" +
+                "polygon mode: P.<br/>" +
+                "clear canvas: C" +
+                "</html>");
+        controls.setForeground(new Color(255, 255, 255));
+        panel.add(controls, BorderLayout.WEST);
+
+        JLabel dashedLineSelect = new JLabel("<html>" +
+                "dotted line: 1<br/>" +
+                "dashed line: 2<br/>" +
+                "</html>");
+        dashedLineSelect.setForeground(new Color(255, 255, 255));
+        panel.add(dashedLineSelect, BorderLayout.EAST);
 
         frame.pack();
         frame.setVisible(true);
@@ -70,49 +89,64 @@ public class Canvas {
             public void keyPressed(KeyEvent keyEvent) {
                 super.keyPressed(keyEvent);
 
-                // ukoncit pri zmacknuti ESC
-                if (keyEvent.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    System.out.println("Goodbye.\n");
-                    System.exit(1);
+                switch (keyEvent.getKeyCode()) {
+                    // ukonceni aplikace
+                    case KeyEvent.VK_ESCAPE -> {
+                        System.out.println("Goodbye.\n");
+                        System.exit(1);
+                    }
+
+                    // vycisteni platna
+                    case KeyEvent.VK_C -> {
+                        raster.clear();
+                        panel.repaint();
+                        triangle = new Triangle();
+                        polygon = new Polygon();
+                        System.out.println("Everything cleared and repainted.\n");
+                    }
+
+                    // swap mezi rezimy
+                    case KeyEvent.VK_L -> {
+                        flag = 1;
+                        raster.clear();
+                        panel.repaint();
+                        triangle = new Triangle();
+                        System.out.println("You entered line mode.\n");
+                    }
+                    case KeyEvent.VK_T -> {
+                        flag = 2;
+                        raster.clear();
+                        panel.repaint();
+                        triangle = new Triangle();
+                        System.out.println("You entered triangle mode.\n");
+                    }
+                    case KeyEvent.VK_D -> {
+                        flag = 3;
+                        raster.clear();
+                        panel.repaint();
+                        System.out.println("You entered dashed line mode.\n");
+                    }
+                    case KeyEvent.VK_P -> {
+                        flag = 4;
+                        raster.clear();
+                        panel.repaint();
+                        polygon = new Polygon();
+                        System.out.println("You entered polygon mode.\n");
+                    }
                 }
 
-                // vycistit vse pri C
-                if (keyEvent.getKeyCode() == KeyEvent.VK_C) {
-                    raster.clear();
-                    panel.repaint();
-                    triangle = new Triangle();
-                    polygon = new Polygon();
-                    System.out.println("Everything cleared and repainted.\n");
-                }
-
-                // swap mezi rezimy
-                if (keyEvent.getKeyCode() == KeyEvent.VK_L) {
-                    flag = 1;
-                    raster.clear();
-                    panel.repaint();
-                    triangle = new Triangle();
-                    System.out.println("You entered line mode.\n");
-                }
-                if (keyEvent.getKeyCode() == KeyEvent.VK_T) {
-                    flag = 2;
-                    raster.clear();
-                    panel.repaint();
-                    triangle = new Triangle();
-                    System.out.println("You entered triangle mode.\n");
-                }
-                if (keyEvent.getKeyCode() == KeyEvent.VK_D) {
-                    flag = 3;
-                    raster.clear();
-                    panel.repaint();
-                    triangle = new Triangle();
-                    System.out.println("You entered dashed line mode.\n");
-                }
-                if (keyEvent.getKeyCode() == KeyEvent.VK_P) {
-                    flag = 4;
-                    raster.clear();
-                    panel.repaint();
-                    polygon = new Polygon();
-                    System.out.println("You entered polygon mode.\n");
+                // swap typu car
+                if (flag == 3) {
+                    switch (keyEvent.getKeyCode()) {
+                        case KeyEvent.VK_1, KeyEvent.VK_NUMPAD1 -> {
+                            lineFlag = 1;
+                            System.out.println("You now draw dashed line");
+                        }
+                        case KeyEvent.VK_2, KeyEvent.VK_NUMPAD2 -> {
+                            lineFlag = 2;
+                            System.out.println("You now draw dotted line");
+                        }
+                    }
                 }
             }
         });
@@ -123,7 +157,7 @@ public class Canvas {
                 super.mouseClicked(e);
 
                 switch (flag) {
-                    case 1 -> {
+                    case 1, 3 -> {
                         raster.clear();
                         x_start = e.getX();
                         y_start = e.getY();
@@ -139,13 +173,6 @@ public class Canvas {
                             panel.repaint();
                             System.out.println("Point: " + triangle.getSize() + " added.\n");
                         }
-                    }
-                    case 3 -> {
-                        raster.clear();
-                        x_start = e.getX();
-                        y_start = e.getY();
-                        raster.setPixel(e.getX(), e.getY(), startPointColor);
-                        panel.repaint();
                     }
                 }
             }
@@ -194,6 +221,16 @@ public class Canvas {
                     }
                     case 3 -> {
                         raster.clear();
+                        switch (lineFlag) {
+                            case 1 -> {
+                                dashedLineRasterizer.setDashLength(5);
+                                dashedLineRasterizer.setSpaceLength(5);
+                            }
+                            case 2 -> {
+                                dashedLineRasterizer.setDashLength(1);
+                                dashedLineRasterizer.setSpaceLength(1);
+                            }
+                        }
                         Line line = new Line(x_start, y_start, e.getX(), e.getY());
                         dashedLineRasterizer.rasterize(line);
                         panel.repaint();
@@ -202,9 +239,9 @@ public class Canvas {
                         raster.clear();
                         Line line = new Line(x_start, y_start, e.getX(), e.getY());
                         Line line2 = new Line(polygon.getPoints().get(polygon.getCount() - 1).getX(), polygon.getPoints().get(polygon.getCount() - 1).getY(), e.getX(), e.getY());
-                        lineRasterizer.rasterize(line);
                         lineRasterizer.rasterize(line2);
                         polygonDrawer.drawPolygon(lineRasterizer, polygon);
+                        lineRasterizer.rasterize(line);
                         panel.repaint();
                     }
                 }

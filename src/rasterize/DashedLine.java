@@ -4,6 +4,9 @@ import model.Line;
 
 public class DashedLine extends LineRasterizer {
 
+    private int spaceLength;
+    private int dashLength;
+
     public DashedLine(Raster raster) {
         super(raster);
     }
@@ -17,9 +20,6 @@ public class DashedLine extends LineRasterizer {
     public void drawLine(int x1, int y1, int x2, int y2) {
         int space = 0;
         int length = 0;
-
-        int spaceLength = 5;
-        int dashLength = 5;
 
         // trivialni algoritmus
         float k;
@@ -76,4 +76,13 @@ public class DashedLine extends LineRasterizer {
         }
 
     }
+
+    public void setSpaceLength(int spaceLength) {
+        this.spaceLength = spaceLength;
+    }
+
+    public void setDashLength(int dashLength) {
+        this.dashLength = dashLength;
+    }
+
 }
