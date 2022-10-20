@@ -1,10 +1,8 @@
 import model.Line;
 import model.Point;
 import model.Triangle;
-import rasterize.DashedLine;
-import rasterize.FilledLineRasterizer;
-import rasterize.LineRasterizer;
-import rasterize.RasterBufferImage;
+import model.Polygon;
+import rasterize.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +18,7 @@ public class Canvas {
     private final LineRasterizer lineRasterizer;
     private final RasterBufferImage raster;
     private final LineRasterizer dashedLineRasterizer;
+    private final PolygonDrawer polygonDrawer;
 
     private int x_start;
     private int y_start;
@@ -27,6 +26,9 @@ public class Canvas {
     private int flag = 1;
 
     Triangle triangle = new Triangle();
+    Polygon polygon = new Polygon();
+
+    private final int startPointColor = 0xfffff;
 
     public Canvas(int width, int height) {
 
@@ -41,6 +43,7 @@ public class Canvas {
         raster = new RasterBufferImage(width, height);
         lineRasterizer = new FilledLineRasterizer(raster);
         dashedLineRasterizer = new DashedLine(raster);
+        polygonDrawer = new PolygonDrawer();
 
         panel = new JPanel() {
             @Override
@@ -78,6 +81,7 @@ public class Canvas {
                     raster.clear();
                     panel.repaint();
                     triangle = new Triangle();
+                    polygon = new Polygon();
                     System.out.println("Everything cleared and repainted.\n");
                 }
 
@@ -103,6 +107,13 @@ public class Canvas {
                     triangle = new Triangle();
                     System.out.println("You entered dashed line mode.\n");
                 }
+                if (keyEvent.getKeyCode() == KeyEvent.VK_P) {
+                    flag = 4;
+                    raster.clear();
+                    panel.repaint();
+                    polygon = new Polygon();
+                    System.out.println("You entered polygon mode.\n");
+                }
             }
         });
 
@@ -116,7 +127,7 @@ public class Canvas {
                         raster.clear();
                         x_start = e.getX();
                         y_start = e.getY();
-                        raster.setPixel(e.getX(), e.getY(), 0xfffff);
+                        raster.setPixel(e.getX(), e.getY(), startPointColor);
                         panel.repaint();
                         System.out.println("You selected new starting point.\n");
                     }
@@ -124,7 +135,7 @@ public class Canvas {
                         if (triangle.getSize() < 2) {
                             Point point = new Point(e.getX(), e.getY());
                             triangle.addPoint(point);
-                            raster.setPixel(point.getX(), point.getY(), 0xfffff);
+                            raster.setPixel(point.getX(), point.getY(), startPointColor);
                             panel.repaint();
                             System.out.println("Point: " + triangle.getSize() + " added.\n");
                         }
@@ -133,7 +144,25 @@ public class Canvas {
                         raster.clear();
                         x_start = e.getX();
                         y_start = e.getY();
-                        raster.setPixel(e.getX(), e.getY(), 0xfffff);
+                        raster.setPixel(e.getX(), e.getY(), startPointColor);
+                        panel.repaint();
+                    }
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                if (flag == 4) {
+                    polygon.addPoint(new Point(e.getX(), e.getY()));
+                    System.out.println("You added point.\n");
+                    if (polygon.getCount() == 1) {
+                        x_start = e.getX();
+                        y_start = e.getY();
+                    }
+                    if (polygon.getCount() > 1) {
+                        raster.clear();
+                        polygonDrawer.drawPolygon(lineRasterizer, polygon);
                         panel.repaint();
                     }
                 }
@@ -167,6 +196,15 @@ public class Canvas {
                         raster.clear();
                         Line line = new Line(x_start, y_start, e.getX(), e.getY());
                         dashedLineRasterizer.rasterize(line);
+                        panel.repaint();
+                    }
+                    case 4 -> {
+                        raster.clear();
+                        Line line = new Line(x_start, y_start, e.getX(), e.getY());
+                        Line line2 = new Line(polygon.getPoints().get(polygon.getCount() - 1).getX(), polygon.getPoints().get(polygon.getCount() - 1).getY(), e.getX(), e.getY());
+                        lineRasterizer.rasterize(line);
+                        lineRasterizer.rasterize(line2);
+                        polygonDrawer.drawPolygon(lineRasterizer, polygon);
                         panel.repaint();
                     }
                 }

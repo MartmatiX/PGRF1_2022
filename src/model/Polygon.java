@@ -5,18 +5,14 @@ import java.util.List;
 
 public class Polygon {
 
-    private final List<Point> points;
-
-    public Polygon() {
-        this.points = new ArrayList<>();
-    }
+    private final List<Point> points = new ArrayList<>();
 
     public void addPoint(Point p) {
         points.add(p);
     }
 
-    public Point getPoint(int index) {
-        return points.get(index);
+    public List<Point> getPoints() {
+        return points;
     }
 
     public int getCount() {

@@ -17,10 +17,6 @@ public class Triangle {
         return points.size();
     }
 
-    public String getPoint() {
-        return points.get(2).getX() + ":" + points.get(2).getY();
-    }
-
     public void drawTriangle(LineRasterizer lineRasterizer) {
         lineRasterizer.drawLine(points.get(0).getX(), points.get(0).getY(), points.get(1).getX(), points.get(1).getY());
 
