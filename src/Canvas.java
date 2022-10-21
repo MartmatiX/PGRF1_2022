@@ -204,16 +204,22 @@ public class Canvas {
                 switch (flag) {
                     case 1 -> {
                         raster.clear();
+                        if (e.getX() >= width || e.getY() >=height || e.getX() < 0 || e.getY() < 0)
+                            return;
                         Line line = new Line(x_start, y_start, e.getX(), e.getY());
                         lineRasterizer.rasterize(line);
                         panel.repaint();
                     }
                     case 2 -> {
                         if (triangle.getSize() >= 2) {
+                            if (e.getX() >= width || e.getY() >=height || e.getX() < 0 || e.getY() < 0)
+                                return;
                             Point p = new Point(e.getX(), e.getY());
                             triangle.addPoint(p);
                             raster.clear();
                             if (triangle.getSize() >= 3) {
+                                if (e.getX() >= width || e.getY() >=height || e.getX() < 0 || e.getY() < 0)
+                                    return;
                                 triangle.drawTriangle(lineRasterizer);
                                 panel.repaint();
                             }
@@ -231,12 +237,16 @@ public class Canvas {
                                 dashedLineRasterizer.setSpaceLength(1);
                             }
                         }
+                        if (e.getX() >= width || e.getY() >=height || e.getX() < 0 || e.getY() < 0)
+                            return;
                         Line line = new Line(x_start, y_start, e.getX(), e.getY());
                         dashedLineRasterizer.rasterize(line);
                         panel.repaint();
                     }
                     case 4 -> {
                         raster.clear();
+                        if (e.getX() >= width || e.getY() >=height || e.getX() < 0 || e.getY() < 0)
+                            return;
                         Line line = new Line(x_start, y_start, e.getX(), e.getY());
                         Line line2 = new Line(polygon.getPoints().get(polygon.getCount() - 1).getX(), polygon.getPoints().get(polygon.getCount() - 1).getY(), e.getX(), e.getY());
                         lineRasterizer.rasterize(line2);
