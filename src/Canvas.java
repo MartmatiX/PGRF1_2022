@@ -62,8 +62,9 @@ public class Canvas {
                 "line mode: L<br/>" +
                 "triangle mode: T<br/>" +
                 "dashed line mode: D<br/>" +
-                "polygon mode: P.<br/>" +
-                "clear canvas: C" +
+                "polygon mode: P<br/>" +
+                "clear canvas: C<br/>" +
+                "close application: ESC" +
                 "</html>");
         controls.setForeground(new Color(255, 255, 255));
         panel.add(controls, BorderLayout.WEST);
