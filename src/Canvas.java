@@ -1,3 +1,5 @@
+import fill.Filler;
+import fill.SeedFiller;
 import model.Line;
 import model.Point;
 import model.Triangle;
@@ -174,6 +176,7 @@ public class Canvas {
                             panel.repaint();
                             System.out.println("Point: " + triangle.getSize() + " added.\n");
                         }
+
                     }
                 }
             }
@@ -181,19 +184,31 @@ public class Canvas {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
-                if (flag == 4) {
-                    polygon.addPoint(new Point(e.getX(), e.getY()));
-                    System.out.println("You added point.\n");
-                    if (polygon.getCount() == 1) {
-                        x_start = e.getX();
-                        y_start = e.getY();
+                switch (e.getButton()) {
+                    case MouseEvent.BUTTON1 -> {
+                        if (flag == 4) {
+                            polygon.addPoint(new Point(e.getX(), e.getY()));
+                            System.out.println("You added point.\n");
+                            if (polygon.getCount() == 1) {
+                                x_start = e.getX();
+                                y_start = e.getY();
+                            }
+                            if (polygon.getCount() > 1) {
+                                raster.clear();
+                                polygonDrawer.drawPolygon(lineRasterizer, polygon);
+                                panel.repaint();
+                            }
+                        }
                     }
-                    if (polygon.getCount() > 1) {
-                        raster.clear();
-                        polygonDrawer.drawPolygon(lineRasterizer, polygon);
-                        panel.repaint();
+                    case MouseEvent.BUTTON3 -> {
+                        if (flag == 4) { // TODO: Fix why this is not working
+                            Filler seedFiller = new SeedFiller(raster, e.getX(), e.getY(), 0x11111, 0x1a1a1a);
+                            seedFiller.fill();
+                            panel.repaint();
+                        }
                     }
                 }
+
             }
         });
 
@@ -205,7 +220,7 @@ public class Canvas {
                 switch (flag) {
                     case 1 -> {
                         raster.clear();
-                        if (e.getX() >= width || e.getY() >=height || e.getX() < 0 || e.getY() < 0)
+                        if (e.getX() >= width || e.getY() >= height || e.getX() < 0 || e.getY() < 0)
                             return;
                         Line line = new Line(x_start, y_start, e.getX(), e.getY());
                         lineRasterizer.rasterize(line);
@@ -213,13 +228,13 @@ public class Canvas {
                     }
                     case 2 -> {
                         if (triangle.getSize() >= 2) {
-                            if (e.getX() >= width || e.getY() >=height || e.getX() < 0 || e.getY() < 0)
+                            if (e.getX() >= width || e.getY() >= height || e.getX() < 0 || e.getY() < 0)
                                 return;
                             Point p = new Point(e.getX(), e.getY());
                             triangle.addPoint(p);
                             raster.clear();
                             if (triangle.getSize() >= 3) {
-                                if (e.getX() >= width || e.getY() >=height || e.getX() < 0 || e.getY() < 0)
+                                if (e.getX() >= width || e.getY() >= height || e.getX() < 0 || e.getY() < 0)
                                     return;
                                 triangle.drawTriangle(lineRasterizer);
                                 panel.repaint();
@@ -238,7 +253,7 @@ public class Canvas {
                                 dashedLineRasterizer.setSpaceLength(1);
                             }
                         }
-                        if (e.getX() >= width || e.getY() >=height || e.getX() < 0 || e.getY() < 0)
+                        if (e.getX() >= width || e.getY() >= height || e.getX() < 0 || e.getY() < 0)
                             return;
                         Line line = new Line(x_start, y_start, e.getX(), e.getY());
                         dashedLineRasterizer.rasterize(line);
@@ -246,7 +261,7 @@ public class Canvas {
                     }
                     case 4 -> {
                         raster.clear();
-                        if (e.getX() >= width || e.getY() >=height || e.getX() < 0 || e.getY() < 0)
+                        if (e.getX() >= width || e.getY() >= height || e.getX() < 0 || e.getY() < 0)
                             return;
                         Line line = new Line(x_start, y_start, e.getX(), e.getY());
                         Line line2 = new Line(polygon.getPoints().get(polygon.getCount() - 1).getX(), polygon.getPoints().get(polygon.getCount() - 1).getY(), e.getX(), e.getY());
