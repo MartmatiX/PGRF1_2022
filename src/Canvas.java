@@ -66,6 +66,7 @@ public class Canvas {
                 "dashed line mode: D<br/>" +
                 "polygon mode: P<br/>" +
                 "clear canvas: C<br/>" +
+                "paint triangle/polygon: RMB<br/>" +
                 "close application: ESC" +
                 "</html>");
         controls.setForeground(new Color(255, 255, 255));
@@ -101,8 +102,7 @@ public class Canvas {
 
                     // vycisteni platna
                     case KeyEvent.VK_C -> {
-                        raster.clear();
-                        panel.repaint();
+                        cleaner();
                         triangle = new Triangle();
                         polygon = new Polygon();
                         System.out.println("Everything cleared and repainted.\n");
@@ -111,28 +111,24 @@ public class Canvas {
                     // swap mezi rezimy
                     case KeyEvent.VK_L -> {
                         flag = 1;
-                        raster.clear();
-                        panel.repaint();
+                        cleaner();
                         triangle = new Triangle();
                         System.out.println("You entered line mode.\n");
                     }
                     case KeyEvent.VK_T -> {
                         flag = 2;
-                        raster.clear();
-                        panel.repaint();
+                        cleaner();
                         triangle = new Triangle();
                         System.out.println("You entered triangle mode.\n");
                     }
                     case KeyEvent.VK_D -> {
                         flag = 3;
-                        raster.clear();
-                        panel.repaint();
+                        cleaner();
                         System.out.println("You entered dashed line mode.\n");
                     }
                     case KeyEvent.VK_P -> {
                         flag = 4;
-                        raster.clear();
-                        panel.repaint();
+                        cleaner();
                         polygon = new Polygon();
                         System.out.println("You entered polygon mode.\n");
                     }
@@ -201,8 +197,9 @@ public class Canvas {
                         }
                     }
                     case MouseEvent.BUTTON3 -> {
-                        if (flag == 4) { // TODO: Fix why this is not working
-                            Filler seedFiller = new SeedFiller(raster, e.getX(), e.getY(), 0x11111, 0x1a1a1a);
+                        if (flag == 4 || flag == 2) {
+                            Filler seedFiller = new SeedFiller(raster, e.getX(), e.getY(), 0xfffff, raster.getPixel(0, 0));
+                            System.out.println("You added seed to location: [" + e.getX() + ", " + e.getY() + "].\n");
                             seedFiller.fill();
                             panel.repaint();
                         }
@@ -273,7 +270,11 @@ public class Canvas {
                 }
             }
         });
+    }
 
+    public void cleaner(){
+        panel.repaint();
+        raster.clear();
     }
 
 }

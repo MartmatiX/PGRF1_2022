@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 
 public class RasterBufferImage implements Raster {
 
-    private BufferedImage img;
+    private final BufferedImage img;
 
     public RasterBufferImage(int width, int height) {
         img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -18,7 +18,7 @@ public class RasterBufferImage implements Raster {
 
     @Override
     public int getPixel(int x, int y) {
-        return 0;
+        return img.getRGB(x, y);
     }
 
     public void present(Graphics g) {
@@ -27,7 +27,7 @@ public class RasterBufferImage implements Raster {
 
     public void clear() {
         Graphics gr = img.getGraphics();
-        gr.setColor(new Color(0x1a1a1a));
+        gr.setColor(Color.black);
         gr.fillRect(0, 0, img.getWidth(), img.getHeight());
     }
 
