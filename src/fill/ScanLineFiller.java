@@ -8,6 +8,7 @@ import rasterize.PolygonDrawer;
 import rasterize.Raster;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ScanLineFiller implements Filler{
@@ -60,17 +61,18 @@ public class ScanLineFiller implements Filler{
         // pro Y od yMin do yMax
         for (int y = yMin; y <= yMax; y++){
             // seznam pruseciku
-            List<Integer> intersections = new ArrayList<>(edges.size());
+            List<Integer> intersections = new ArrayList<>();
 
             for (Edge e : edges){
                 if (e.isIntersection(y))
                     intersections.add(e.getIntersection(y));
             }
 
-            bubbleSort(intersections);
+            Collections.sort(intersections);
+            //bubbleSort(intersections);
 
-            for (int i = 0; i < intersections.size() - 1; i++){
-                for(int j = intersections.get(i); j < intersections.get(i + 1); j++){
+            for (int i = 0; i < intersections.size() - 1;){
+                for(int j = intersections.get(i++); j < intersections.get(i++ % intersections.size()); j++){
                     raster.setPixel(j, y, 0x125ff);
                 }
             }
