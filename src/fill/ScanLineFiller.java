@@ -8,8 +8,6 @@ import rasterize.PolygonDrawer;
 import rasterize.Raster;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 public class ScanLineFiller implements Filler{
@@ -41,10 +39,11 @@ public class ScanLineFiller implements Filler{
             Point p1 = polygon.getPoint(i);
             Point p2 = polygon.getPoint(nextIndex);
             Edge edge = new Edge(p1.getX(), p1.getY(), p2.getX(), p2.getY());
-            if (!edge.isHorizontal())
-                edge.orientate();
+            if (edge.isHorizontal())
+                continue;
 
             // pridam hranu do seznamu
+            edge.orientate();
             edges.add(edge);
         }
 
@@ -61,24 +60,22 @@ public class ScanLineFiller implements Filler{
         // pro Y od yMin do yMax
         for (int y = yMin; y <= yMax; y++){
             // seznam pruseciku
-            List<Integer> intersections = new ArrayList<>();
+            List<Integer> intersections = new ArrayList<>(edges.size());
 
             for (Edge e : edges){
                 if (e.isIntersection(y))
-                    intersections.add(e.getIntersection().getX());
+                    intersections.add(e.getIntersection(y));
             }
 
-            //Collections.sort(intersections);
             bubbleSort(intersections);
-            for (int i = 1; i < intersections.size(); i += 2){
-                lineRasterizer.drawLine(intersections.get(i), y, intersections.get(i + 1), y);
+
+            for (int i = 0; i < intersections.size() - 1; i++){
                 for(int j = intersections.get(i); j < intersections.get(i + 1); j++){
-                    raster.setPixel(j, y, 0xEEEEE);
+                    raster.setPixel(j, y, 0x125ff);
                 }
             }
-            polygonDrawer.drawPolygon(lineRasterizer, polygon);
         }
-
+        polygonDrawer.drawPolygon(lineRasterizer, polygon);
     }
 
     public void bubbleSort(List<Integer> list){

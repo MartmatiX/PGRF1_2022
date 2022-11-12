@@ -173,7 +173,6 @@ public class Canvas {
                             panel.repaint();
                             System.out.println("Point: " + triangle.getSize() + " added.\n");
                         }
-
                     }
                 }
             }

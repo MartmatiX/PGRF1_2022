@@ -16,7 +16,7 @@ public class Edge {
     }
 
     public void orientate(){
-        if (y1 > y2){
+        if (y1 >= y2){
             int temp = x1;
             x1 = x2;
             x2 = temp;
@@ -27,13 +27,16 @@ public class Edge {
     }
 
     public boolean isIntersection(int y){
-        return y1 <= y && y >= y2;
+        return y > y1 && y < y2;
     }
 
-    public Point getIntersection(){
-        double x = (double) (y2 - y1) / (x1 - x2);
-        double y = x1 * x + y1;
-        return new Point((int) x, (int) y);
+    public int getIntersection(int y){
+        float dx = (float) x2 - x1;
+        float dy = (float) y2 - y1;
+        float k = dx / dy;
+        float q = x1 - (k * y1);
+        float x = (k * y) + q;
+        return Math.round(x);
     }
 
 }
