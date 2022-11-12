@@ -19,4 +19,8 @@ public class Polygon {
         return points.size();
     }
 
+    public Point getPoint(int index){
+        return points.get(index);
+    }
+
 }

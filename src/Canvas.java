@@ -1,4 +1,5 @@
 import fill.Filler;
+import fill.ScanLineFiller;
 import fill.SeedFiller;
 import model.Line;
 import model.Point;
@@ -204,6 +205,13 @@ public class Canvas {
                             panel.repaint();
                         }
                     }
+                    case MouseEvent.BUTTON2 -> {
+                        if (flag == 4){
+                            Filler scanLineFiller = new ScanLineFiller(lineRasterizer, polygonDrawer, polygon, raster);
+                            scanLineFiller.fill();
+                            panel.repaint();
+                        }
+                    }
                 }
 
             }
@@ -213,66 +221,57 @@ public class Canvas {
             @Override
             public void mouseDragged(MouseEvent e) {
                 super.mouseDragged(e);
-
-                switch (flag) {
-                    case 1 -> {
-                        raster.clear();
-                        if (e.getX() >= width || e.getY() >= height || e.getX() < 0 || e.getY() < 0)
-                            return;
-                        Line line = new Line(x_start, y_start, e.getX(), e.getY());
-                        lineRasterizer.rasterize(line);
-                        panel.repaint();
-                    }
-                    case 2 -> {
-                        if (triangle.getSize() >= 2) {
-                            if (e.getX() >= width || e.getY() >= height || e.getX() < 0 || e.getY() < 0)
-                                return;
-                            Point p = new Point(e.getX(), e.getY());
-                            triangle.addPoint(p);
+                if (SwingUtilities.isLeftMouseButton(e)) {
+                    switch (flag) {
+                        case 1 -> {
                             raster.clear();
-                            if (triangle.getSize() >= 3) {
-                                if (e.getX() >= width || e.getY() >= height || e.getX() < 0 || e.getY() < 0)
-                                    return;
-                                triangle.drawTriangle(lineRasterizer);
-                                panel.repaint();
+                            Line line = new Line(x_start, y_start, e.getX(), e.getY());
+                            lineRasterizer.rasterize(line);
+                            panel.repaint();
+                        }
+                        case 2 -> {
+                            if (triangle.getSize() >= 2) {
+                                Point p = new Point(e.getX(), e.getY());
+                                triangle.addPoint(p);
+                                raster.clear();
+                                if (triangle.getSize() >= 3) {
+                                    triangle.drawTriangle(lineRasterizer);
+                                    panel.repaint();
+                                }
                             }
                         }
-                    }
-                    case 3 -> {
-                        raster.clear();
-                        switch (lineFlag) {
-                            case 1 -> {
-                                dashedLineRasterizer.setDashLength(5);
-                                dashedLineRasterizer.setSpaceLength(5);
+                        case 3 -> {
+                            raster.clear();
+                            switch (lineFlag) {
+                                case 1 -> {
+                                    dashedLineRasterizer.setDashLength(5);
+                                    dashedLineRasterizer.setSpaceLength(5);
+                                }
+                                case 2 -> {
+                                    dashedLineRasterizer.setDashLength(1);
+                                    dashedLineRasterizer.setSpaceLength(1);
+                                }
                             }
-                            case 2 -> {
-                                dashedLineRasterizer.setDashLength(1);
-                                dashedLineRasterizer.setSpaceLength(1);
-                            }
+                            Line line = new Line(x_start, y_start, e.getX(), e.getY());
+                            dashedLineRasterizer.rasterize(line);
+                            panel.repaint();
                         }
-                        if (e.getX() >= width || e.getY() >= height || e.getX() < 0 || e.getY() < 0)
-                            return;
-                        Line line = new Line(x_start, y_start, e.getX(), e.getY());
-                        dashedLineRasterizer.rasterize(line);
-                        panel.repaint();
-                    }
-                    case 4 -> {
-                        raster.clear();
-                        if (e.getX() >= width || e.getY() >= height || e.getX() < 0 || e.getY() < 0)
-                            return;
-                        Line line = new Line(x_start, y_start, e.getX(), e.getY());
-                        Line line2 = new Line(polygon.getPoints().get(polygon.getCount() - 1).getX(), polygon.getPoints().get(polygon.getCount() - 1).getY(), e.getX(), e.getY());
-                        lineRasterizer.rasterize(line2);
-                        polygonDrawer.drawPolygon(lineRasterizer, polygon);
-                        lineRasterizer.rasterize(line);
-                        panel.repaint();
+                        case 4 -> {
+                            raster.clear();
+                            Line line = new Line(x_start, y_start, e.getX(), e.getY());
+                            Line line2 = new Line(polygon.getPoints().get(polygon.getCount() - 1).getX(), polygon.getPoints().get(polygon.getCount() - 1).getY(), e.getX(), e.getY());
+                            lineRasterizer.rasterize(line2);
+                            lineRasterizer.rasterize(line);
+                            polygonDrawer.drawPolygon(lineRasterizer, polygon);
+                            panel.repaint();
+                        }
                     }
                 }
             }
         });
     }
 
-    public void cleaner(){
+    public void cleaner() {
         panel.repaint();
         raster.clear();
     }

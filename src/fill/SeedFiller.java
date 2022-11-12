@@ -1,6 +1,9 @@
 package fill;
 
 import rasterize.Raster;
+import rasterize.RasterBufferImage;
+
+import java.awt.image.BufferedImage;
 
 public class SeedFiller implements Filler {
 
