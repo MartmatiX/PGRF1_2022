@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ScanLineFiller implements Filler{
+public class ScanLineFiller implements Filler {
 
     private final LineRasterizer lineRasterizer;
     private final PolygonDrawer polygonDrawer;
@@ -30,12 +30,12 @@ public class ScanLineFiller implements Filler{
         scanLine();
     }
 
-    private void scanLine(){
+    private void scanLine() {
         // init seznamu hran
         List<Edge> edges = new ArrayList<>();
 
         // projdu pointy a vytvorim z nich hrany
-        for (int i = 0; i < polygon.getCount(); i++){
+        for (int i = 0; i < polygon.getCount(); i++) {
             int nextIndex = (i + 1) % polygon.getCount();
             Point p1 = polygon.getPoint(i);
             Point p2 = polygon.getPoint(nextIndex);
@@ -51,7 +51,7 @@ public class ScanLineFiller implements Filler{
         // najit yMin, yMax
         int yMin = polygon.getPoint(0).getY();
         int yMax = yMin;
-        for (Point p : polygon.getPoints()){
+        for (Point p : polygon.getPoints()) {
             if (p.getY() < yMin)
                 yMin = p.getY();
             if (p.getY() > yMax)
@@ -59,11 +59,11 @@ public class ScanLineFiller implements Filler{
         }
 
         // pro Y od yMin do yMax
-        for (int y = yMin; y <= yMax; y++){
+        for (int y = yMin; y <= yMax; y++) {
             // seznam pruseciku
             List<Integer> intersections = new ArrayList<>();
 
-            for (Edge e : edges){
+            for (Edge e : edges) {
                 if (e.isIntersection(y))
                     intersections.add(e.getIntersection(y));
             }
@@ -72,7 +72,9 @@ public class ScanLineFiller implements Filler{
             //bubbleSort(intersections);
 
             for (int i = 0; i < intersections.size() - 1;){
-                for(int j = intersections.get(i++); j < intersections.get(i++ % intersections.size()); j++){
+                int start = intersections.get(i++);
+                int end = intersections.get(i++ % intersections.size());
+                for(int j = start; j < end; j++){
                     raster.setPixel(j, y, 0x125ff);
                 }
             }
@@ -80,11 +82,11 @@ public class ScanLineFiller implements Filler{
         polygonDrawer.drawPolygon(lineRasterizer, polygon);
     }
 
-    public void bubbleSort(List<Integer> list){
+    public void bubbleSort(List<Integer> list) {
         int temp;
-        for (int i = 0; i < list.size(); i++){
-            for (int j = 1; j < list.size() - 1; j++){
-                if (list.get(j - 1) > list.get(j)){
+        for (int i = 0; i < list.size(); i++) {
+            for (int j = 1; j < list.size() - 1; j++) {
+                if (list.get(j - 1) > list.get(j)) {
                     temp = list.get(j - 1);
                     list.set(j - 1, list.get(j));
                     list.set(j, temp);
