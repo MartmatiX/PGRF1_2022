@@ -19,6 +19,7 @@ public class Canvas {
     private final JPanel panel;
 
     private final LineRasterizer lineRasterizer;
+    private final LineRasterizer lineRasterizerBright;
     private final RasterBufferImage raster;
     private final DashedLine dashedLineRasterizer;
     private final PolygonDrawer polygonDrawer;
@@ -28,9 +29,11 @@ public class Canvas {
 
     private int flag = 1;
     private int lineFlag = 1;
+    private int polygonFlag = 1;
 
     Triangle triangle = new Triangle();
     Polygon polygon = new Polygon();
+    Polygon polygon2 = new Polygon();
 
     private final int startPointColor = 0xfffff;
 
@@ -44,7 +47,8 @@ public class Canvas {
         frame.setSize(width, height);
 
         raster = new RasterBufferImage(width, height);
-        lineRasterizer = new FilledLineRasterizer(raster);
+        lineRasterizer = new FilledLineRasterizer(raster, 0xff0000);
+        lineRasterizerBright = new FilledLineRasterizer(raster, 0xfffff);
         dashedLineRasterizer = new DashedLine(raster);
         polygonDrawer = new PolygonDrawer();
 
@@ -140,11 +144,24 @@ public class Canvas {
                     switch (keyEvent.getKeyCode()) {
                         case KeyEvent.VK_1, KeyEvent.VK_NUMPAD1 -> {
                             lineFlag = 1;
-                            System.out.println("You now draw dashed line");
+                            System.out.println("You now draw dashed line.\n");
                         }
                         case KeyEvent.VK_2, KeyEvent.VK_NUMPAD2 -> {
                             lineFlag = 2;
-                            System.out.println("You now draw dotted line");
+                            System.out.println("You now draw dotted line.\n");
+                        }
+                    }
+                }
+
+                if (flag == 4){
+                    switch (keyEvent.getKeyCode()){
+                        case KeyEvent.VK_2, KeyEvent.VK_NUMPAD2 -> {
+                            polygonFlag = 2;
+                            System.out.println("You can draw second polygon.\n");
+                        }
+                        case KeyEvent.VK_1, KeyEvent.VK_NUMPAD1 -> {
+                            polygonFlag = 1;
+                            System.out.println("You can draw first polygon.\n");
                         }
                     }
                 }
@@ -182,7 +199,7 @@ public class Canvas {
                 super.mouseReleased(e);
                 switch (e.getButton()) {
                     case MouseEvent.BUTTON1 -> {
-                        if (flag == 4) {
+                        if (flag == 4 && polygonFlag == 1) {
                             polygon.addPoint(new Point(e.getX(), e.getY()));
                             System.out.println("You added point.\n");
                             if (polygon.getCount() == 1) {
@@ -192,6 +209,23 @@ public class Canvas {
                             if (polygon.getCount() > 1) {
                                 raster.clear();
                                 polygonDrawer.drawPolygon(lineRasterizer, polygon);
+                                if (polygon2.getCount() > 1)
+                                    polygonDrawer.drawPolygon(lineRasterizerBright, polygon2);
+                                panel.repaint();
+                            }
+                        }
+                        if (flag == 4 && polygonFlag == 2){
+                            polygon2.addPoint(new Point(e.getX(), e.getY()));
+                            System.out.println("You added point.\n");
+                            if (polygon2.getCount() == 1) {
+                                x_start = e.getX();
+                                y_start = e.getY();
+                            }
+                            if (polygon2.getCount() > 1) {
+                                raster.clear();
+                                polygonDrawer.drawPolygon(lineRasterizerBright, polygon2);
+                                if (polygon.getCount() > 1)
+                                    polygonDrawer.drawPolygon(lineRasterizer, polygon);
                                 panel.repaint();
                             }
                         }
@@ -256,14 +290,29 @@ public class Canvas {
                             panel.repaint();
                         }
                         case 4 -> {
-                            raster.clear();
-                            Line line = new Line(x_start, y_start, e.getX(), e.getY());
-                            Line line2 = new Line(polygon.getPoints().get(polygon.getCount() - 1).getX(), polygon.getPoints().get(polygon.getCount() - 1).getY(), e.getX(), e.getY());
-                            lineRasterizer.rasterize(line2);
-                            lineRasterizer.rasterize(line);
-                            polygonDrawer.drawPolygon(lineRasterizer, polygon);
-                            panel.repaint();
+                            switch(polygonFlag){
+                                case 1 -> {
+                                    raster.clear();
+                                    Line line = new Line(x_start, y_start, e.getX(), e.getY());
+                                    Line line2 = new Line(polygon.getPoints().get(polygon.getCount() - 1).getX(), polygon.getPoints().get(polygon.getCount() - 1).getY(), e.getX(), e.getY());
+                                    lineRasterizer.rasterize(line2);
+                                    lineRasterizer.rasterize(line);
+                                    polygonDrawer.drawPolygon(lineRasterizer, polygon);
+                                    panel.repaint();
+                                }
+                                case 2 -> {
+                                    raster.clear();
+                                    Line line = new Line(x_start, y_start, e.getX(), e.getY());
+                                    Line line2 = new Line(polygon2.getPoints().get(polygon2.getCount() - 1).getX(), polygon2.getPoints().get(polygon2.getCount() - 1).getY(), e.getX(), e.getY());
+                                    lineRasterizerBright.rasterize(line2);
+                                    lineRasterizerBright.rasterize(line);
+                                    polygonDrawer.drawPolygon(lineRasterizerBright, polygon2);
+                                    panel.repaint();
+                                }
+                            }
+
                         }
+
                     }
                 }
             }

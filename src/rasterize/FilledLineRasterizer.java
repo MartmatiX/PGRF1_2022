@@ -9,9 +9,11 @@ public class FilledLineRasterizer extends LineRasterizer {
                   zaroven cim mensi je uhel, tim mene presneji se usecka vykresluje
      */
 
+    private int color;
 
-    public FilledLineRasterizer(Raster raster) {
+    public FilledLineRasterizer(Raster raster, int color) {
         super(raster);
+        this.color = color;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class FilledLineRasterizer extends LineRasterizer {
 
             for (int x = x1; x <= x2; x++) { // vykresleni pomoci x
                 float y = k * x + q;
-                raster.setPixel(x, Math.round(y), 0xff0000);
+                raster.setPixel(x, Math.round(y), color);
             }
         } else {
             if (y1 > y2) {
@@ -47,8 +49,12 @@ public class FilledLineRasterizer extends LineRasterizer {
             }
             for (int y = y1; y <= y2; y++) { // vykresleni pomoci y
                 int x = Math.round((y - q) / k);
-                raster.setPixel(x, y, 0xff0000);
+                raster.setPixel(x, y, color);
             }
         }
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }
