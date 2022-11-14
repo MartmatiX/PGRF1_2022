@@ -153,8 +153,8 @@ public class Canvas {
                     }
                 }
 
-                if (flag == 4){
-                    switch (keyEvent.getKeyCode()){
+                if (flag == 4) {
+                    switch (keyEvent.getKeyCode()) {
                         case KeyEvent.VK_2, KeyEvent.VK_NUMPAD2 -> {
                             polygonFlag = 2;
                             System.out.println("You can draw second polygon.\n");
@@ -214,7 +214,7 @@ public class Canvas {
                                 panel.repaint();
                             }
                         }
-                        if (flag == 4 && polygonFlag == 2){
+                        if (flag == 4 && polygonFlag == 2) {
                             polygon2.addPoint(new Point(e.getX(), e.getY()));
                             System.out.println("You added point.\n");
                             if (polygon2.getCount() == 1) {
@@ -239,11 +239,19 @@ public class Canvas {
                         }
                     }
                     case MouseEvent.BUTTON2 -> {
-                        if (flag == 4){
-                            Filler scanLineFiller = new ScanLineFiller(lineRasterizer, polygonDrawer, polygon, raster);
-                            scanLineFiller.fill();
-                            panel.repaint();
+                        if (flag == 4) {
+                            if (polygon.getCount() > 2) {
+                                Filler scanLineFiller = new ScanLineFiller(lineRasterizer, polygonDrawer, polygon, raster);
+                                scanLineFiller.fill();
+                                panel.repaint();
+                            }
+                            if (polygon2.getCount() > 2) {
+                                Filler scanLineFiller = new ScanLineFiller(lineRasterizerBright, polygonDrawer, polygon2, raster);
+                                scanLineFiller.fill();
+                                panel.repaint();
+                            }
                         }
+
                     }
                 }
 
@@ -290,7 +298,7 @@ public class Canvas {
                             panel.repaint();
                         }
                         case 4 -> {
-                            switch(polygonFlag){
+                            switch (polygonFlag) {
                                 case 1 -> {
                                     raster.clear();
                                     Line line = new Line(x_start, y_start, e.getX(), e.getY());

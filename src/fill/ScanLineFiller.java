@@ -69,7 +69,6 @@ public class ScanLineFiller implements Filler {
             }
 
             Collections.sort(intersections);
-            //bubbleSort(intersections);
 
             for (int i = 0; i < intersections.size() - 1;){
                 int start = intersections.get(i++);
@@ -80,19 +79,6 @@ public class ScanLineFiller implements Filler {
             }
         }
         polygonDrawer.drawPolygon(lineRasterizer, polygon);
-    }
-
-    public void bubbleSort(List<Integer> list) {
-        int temp;
-        for (int i = 0; i < list.size(); i++) {
-            for (int j = 1; j < list.size() - 1; j++) {
-                if (list.get(j - 1) > list.get(j)) {
-                    temp = list.get(j - 1);
-                    list.set(j - 1, list.get(j));
-                    list.set(j, temp);
-                }
-            }
-        }
     }
 
 }
