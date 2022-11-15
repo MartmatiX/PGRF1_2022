@@ -1,9 +1,8 @@
 import fill.Filler;
 import fill.ScanLineFiller;
 import fill.SeedFiller;
-import model.Line;
+import model.*;
 import model.Point;
-import model.Triangle;
 import model.Polygon;
 import rasterize.*;
 
@@ -311,6 +310,11 @@ public class Canvas {
                 flag = 4;
                 cleaner();
                 System.out.println("You entered polygon mode.\n");
+            }
+            case KeyEvent.VK_Q -> {
+                CroppedPolygon crop = new CroppedPolygon(polygon2);
+                Polygon croppedPolygon = new Polygon(crop.cropPolygon(polygon));
+                scanLineFillPolygon(lineRasterizer, croppedPolygon);
             }
         }
     }

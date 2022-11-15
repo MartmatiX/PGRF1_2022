@@ -28,4 +28,23 @@ public class Line {
         return y2;
     }
 
+    public boolean isInside(Point v) {
+        int side = ((x2 - x1) * (v.getY() - y1) - (y2 - y1) * (v.getX() - x1));
+        return side < 0;
+    }
+
+    public Point intersection(Point v1, Point v2) {
+        // metoda pro vypocet pruseciku pomoci primky a dvou bodu
+        double x0, y0;
+        double x3 = v2.getX();
+        double y3 = v2.getY();
+        double x4 = v1.getX();
+        double y4 = v1.getY();
+
+        double v = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+        x0 = ((x1 * y2 - x2 * y1) * (x3 - x4) - (x3 * y4 - x4 * y3) * (x1 - x2)) / v;
+        y0 = ((x1 * y2 - x2 * y1) * (y3 - y4) - (x3 * y4 - x4 * y3) * (y1 - y2)) / v;
+        return new Point((int) Math.round(x0), (int) Math.round(y0));
+    }
+
 }

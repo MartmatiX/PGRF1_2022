@@ -7,6 +7,16 @@ public class Polygon {
 
     private final List<Point> points = new ArrayList<>();
 
+    public Polygon() {
+
+    }
+
+    public Polygon(Polygon cropPolygon) {
+        for (int i = 0; i < cropPolygon.getCount(); i++) {
+            this.points.add(cropPolygon.getPoint(i));
+        }
+    }
+
     public void addPoint(Point p) {
         points.add(p);
     }
@@ -15,7 +25,7 @@ public class Polygon {
         return points;
     }
 
-    public List<Edge> getEdges(){
+    public List<Edge> getEdges() {
         List<Edge> edges = new ArrayList<>();
         for (int i = 0; i < points.size(); i++) {
             int nextIndex = (i + 1) % points.size();
@@ -36,8 +46,12 @@ public class Polygon {
         return points.size();
     }
 
-    public Point getPoint(int index){
+    public Point getPoint(int index) {
         return points.get(index);
+    }
+
+    public void clearPolygon() {
+        this.points.clear();
     }
 
 }
