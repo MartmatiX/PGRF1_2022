@@ -30,6 +30,8 @@ public class ScanLineFiller implements Filler {
     }
 
     private void scanLine() {
+        int[] colors = new int[]{0xff0000, 0xfffff};
+        int colorSetter;
         // init seznamu hran
         List<Edge> edges = new ArrayList<>();
 
@@ -73,7 +75,12 @@ public class ScanLineFiller implements Filler {
                 int start = intersections.get(i++);
                 int end = intersections.get(i++ % intersections.size());
                 for (int j = start; j < end; j++) {
-                    raster.setPixel(j, y, 0x125ff);
+                    int color = j % 8;
+                    if (color == 0)
+                        colorSetter = 0;
+                    else
+                        colorSetter = 1;
+                    raster.setPixel(j, y, colors[colorSetter]);
                 }
             }
         }
