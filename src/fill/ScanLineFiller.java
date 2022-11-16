@@ -8,7 +8,6 @@ import rasterize.PolygonDrawer;
 import rasterize.Raster;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class ScanLineFiller implements Filler {
@@ -68,17 +67,33 @@ public class ScanLineFiller implements Filler {
                     intersections.add(e.getIntersection(y));
             }
 
-            Collections.sort(intersections);
+            sort(intersections);
 
-            for (int i = 0; i < intersections.size() - 1;){
+            for (int i = 0; i < intersections.size() - 1; ) {
                 int start = intersections.get(i++);
                 int end = intersections.get(i++ % intersections.size());
-                for(int j = start; j < end; j++){
+                for (int j = start; j < end; j++) {
                     raster.setPixel(j, y, 0x125ff);
                 }
             }
         }
         polygonDrawer.drawPolygon(lineRasterizer, polygon);
+    }
+
+    public void sort(List<Integer> list) { // Selection sort
+        for (int i = 0; i < list.size(); i++){
+            int min = list.get(i);
+            int minId = i;
+            for (int j = i + 1; j < list.size(); j++){
+                if (list.get(j) < min){
+                    min = list.get(j);
+                    minId = j;
+                }
+            }
+            int temp = list.get(i);
+            list.set(i, min);
+            list.set(minId, temp);
+        }
     }
 
 }

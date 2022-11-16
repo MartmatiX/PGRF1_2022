@@ -213,9 +213,7 @@ public class Canvas {
                                     panel.repaint();
                                 }
                             }
-
                         }
-
                     }
                 }
             }
@@ -245,15 +243,17 @@ public class Canvas {
                 "dashed line mode: D<br/>" +
                 "polygon mode: P<br/>" +
                 "clear canvas: C<br/>" +
-                "paint triangle/polygon: RMB<br/>" +
+                "paint triangle/polygon (seed): RMB<br/>" +
+                "paint polygon (scan line): Mouse wheel<br/>" +
+                "paint intersection of polygons: Q<br/>" +
                 "close application: ESC" +
                 "</html>");
         controls.setForeground(new Color(255, 255, 255));
         panel.add(controls, BorderLayout.WEST);
 
         JLabel dashedLineSelect = new JLabel("<html>" +
-                "dotted line: 1<br/>" +
-                "dashed line: 2<br/>" +
+                "dotted line / polygon: 1<br/>" +
+                "dashed line / cropping polygon: 2<br/>" +
                 "</html>");
         dashedLineSelect.setForeground(new Color(255, 255, 255));
         panel.add(dashedLineSelect, BorderLayout.EAST);
@@ -312,12 +312,27 @@ public class Canvas {
                 System.out.println("You entered polygon mode.\n");
             }
             case KeyEvent.VK_Q -> {
-                CroppedPolygon crop = new CroppedPolygon(polygon2);
-                Polygon croppedPolygon = new Polygon(crop.cropPolygon(polygon));
-                scanLineFillPolygon(lineRasterizer, croppedPolygon);
+                if (flag == 4) {
+                    try {
+                        CroppedPolygon crop = new CroppedPolygon(polygon2);
+                        Polygon croppedPolygon = new Polygon(crop.cropPolygon(polygon));
+                        scanLineFillPolygon(lineRasterizer, croppedPolygon);
+                    } catch (Exception e) {
+                        System.out.println("Can not use this cropping polygon! Please create a new one: N\n");
+                    }
+                }
+            }
+            case KeyEvent.VK_N -> {
+                polygon2 = new Polygon();
+                raster.clear();
+                if (polygon.getCount() > 2) {
+                    polygonDrawer.drawPolygon(lineRasterizer, polygon);
+                }
+                panel.repaint();
             }
         }
     }
+
 
     public void swapLineMode(KeyEvent keyEvent) {
         // swap typu car
