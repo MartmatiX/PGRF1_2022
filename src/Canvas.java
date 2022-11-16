@@ -366,7 +366,7 @@ public class Canvas {
     }
 
     public void seedFillPolygonTriangle(int fillColor, MouseEvent e) {
-        Filler seedFiller = new SeedFiller(raster, e.getX(), e.getY(), fillColor, raster.getPixel(0, 0));
+        Filler seedFiller = new SeedFiller(raster, e.getX(), e.getY(), raster.getPixel(0, 0));
         System.out.println("You added seed to location: [" + e.getX() + ", " + e.getY() + "].\n");
         seedFiller.fill();
         panel.repaint();
