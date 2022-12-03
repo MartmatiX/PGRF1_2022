@@ -11,8 +11,9 @@ import java.util.List;
 public abstract class Solid {
     protected List<Point3D> vb = new ArrayList<>();
     protected List<Integer> ib = new ArrayList<>();
-
+    protected List<Integer> colors = new ArrayList<>();
     protected Mat4 transMat = new Mat4Identity();
+    protected boolean transferable = true;
 
     private Mat4 model = new Mat4Identity();
 
@@ -36,11 +37,27 @@ public abstract class Solid {
         ib.addAll(Arrays.asList(indices));
     }
 
+    public int getColor(int index) {
+        if (this.colors != null) {
+            return this.colors.get(index);
+        }
+        return 0x000000;
+    }
+
+    public int getColorSize() {
+        return this.colors.size();
+    }
+
+    void addColors(Integer... colors) {
+        this.colors.addAll(Arrays.asList(colors));
+    }
+
     public Mat4 getTransMat() {
         return transMat;
     }
 
     public boolean isTransferable() {
-        return true;
+        return transferable;
     }
+
 }

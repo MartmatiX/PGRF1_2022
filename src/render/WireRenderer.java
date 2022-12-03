@@ -17,26 +17,21 @@ public class WireRenderer {
     private Mat4 view;
     private final Mat4 proj;
 
-    public WireRenderer(FilledLineRasterizer lineRasterizer, BufferedImage img, Mat4 view, Mat4 proj){
+    public WireRenderer(FilledLineRasterizer lineRasterizer, BufferedImage img, Mat4 view, Mat4 proj, Mat4 model) {
         this.lineRasterizer = lineRasterizer;
         this.img = img;
         this.view = view;
         this.proj = proj;
     }
 
-    private Boolean cut(Point3D point){
-        return -point.getW() <= point.getY() && -point.getW() <= point.getX() && point.getY() <= point.getW() && point.getX() <= point.getW() && point.getZ() >= 0 && point.getZ() <= point.getW();
-    }
-
     public void renderSolid(Solid solid, Mat4 model) {
-        Mat4 model1;
         if (solid.isTransferable()) {
-            model1 = solid.getTransMat().mul(model);
+            model = solid.getTransMat().mul(model);
         } else {
-            model1 = new Mat4Identity();
+            model = new Mat4Identity();
         }
 
-        final Mat4 finalTransform = model1.mul(view).mul(proj);
+        final Mat4 finalTransform = model.mul(view).mul(proj);
 
         for (int i = 0; i < solid.getIb().size(); i = i + 2) {
             int index1 = solid.getIb().get(i);
@@ -51,24 +46,22 @@ public class WireRenderer {
             Vec3D vectorA = null;
             Vec3D vectorB = null;
 
-            if (cut(point1) && cut(point2)){
-                if (point1.dehomog().isPresent()) {
-                    vectorA = point1.dehomog().get();
-                }
+            if (point1.dehomog().isPresent()) {
+                vectorA = point1.dehomog().get();
+            }
+            if (point2.dehomog().isPresent()) {
+                vectorB = point2.dehomog().get();
+            }
 
-                if (point1.dehomog().isPresent()) {
-                    if (point2.dehomog().isPresent())
-                        vectorB = point2.dehomog().get();
-                }
+            assert vectorA != null;
+            int x1 = (int) ((1 + vectorA.getX()) * (img.getWidth() - 1) / 2);
+            int y1 = (int) ((1 - vectorA.getY()) * (img.getHeight() - 1) / 2);
+            assert vectorB != null;
+            int x2 = (int) ((1 + vectorB.getX()) * (img.getWidth() - 1) / 2);
+            int y2 = (int) ((1 - vectorB.getY()) * (img.getHeight() - 1) / 2);
 
-                assert vectorA != null;
-                int x1 = (int) ((1 + vectorA.getX()) * (img.getWidth() - 1) / 2);
-                int y1 = (int) ((1 - vectorA.getY()) * (img.getHeight() - 1) / 2);
-
-                assert vectorB != null;
-                int x2 = (int) ((1 + vectorB.getX()) * (img.getWidth() - 1) / 2);
-                int y2 = (int) ((1 - vectorB.getY()) * (img.getHeight() - 1) / 2);
-
+            if (x1 >= 0 && x1 < img.getWidth() && y1 >= 0 && y1 < img.getHeight() && x2 >= 0 && x2 < img.getWidth() && y2 >= 0 && y2 < img.getHeight()) {
+                lineRasterizer.setColor(solid.getColor(i % solid.getColorSize()));
                 lineRasterizer.drawLine(x1, y1, x2, y2);
             }
         }
@@ -80,7 +73,7 @@ public class WireRenderer {
         }
     }
 
-    public void setView(Mat4 view){
+    public void setView(Mat4 view) {
         this.view = view;
     }
 

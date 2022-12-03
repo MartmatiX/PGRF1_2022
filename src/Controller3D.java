@@ -1,6 +1,7 @@
 import rasterize.FilledLineRasterizer;
 import rasterize.RasterBufferImage;
 import render.WireRenderer;
+import solids.AxisRGB;
 import solids.Cube;
 import solids.Solid;
 import transforms.*;
@@ -16,6 +17,8 @@ public class Controller3D {
     private final RasterBufferImage raster;
     private final WireRenderer wireRenderer;
     private Mat4 model = new Mat4Identity();
+
+    private Point2D mousePos = new Point2D(0, 0);
 
     private final List<Solid> solids = new ArrayList<>();
 
@@ -85,12 +88,31 @@ public class Controller3D {
             render();
         });
 
+        panel.addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                super.mouseDragged(e);
+                double dx = e.getX() - mousePos.getX();
+                double dy = e.getY() - mousePos.getY();
+
+                camera = camera.addAzimuth((dx) * Math.PI / 360);
+                camera = camera.addZenith((dy) * Math.PI / 360);
+
+                mousePos = new Point2D(e.getX(), e.getY());
+
+                render();
+            }
+        });
+
         // CV 3 ops
-        FilledLineRasterizer filledLineRasterizer = new FilledLineRasterizer(raster, 0xffff);
-        wireRenderer = new WireRenderer(filledLineRasterizer, raster.getImg(), camera.getViewMatrix(), new Mat4OrthoRH(20, 20, 0.1, 200));
+        FilledLineRasterizer filledLineRasterizer = new FilledLineRasterizer(raster);
+        wireRenderer = new WireRenderer(filledLineRasterizer, raster.getImg(), camera.getViewMatrix(), new Mat4OrthoRH(20, 20, 0.1, 200), model);
 
         Cube c1 = new Cube();
         solids.add(c1);
+
+        AxisRGB aRGB = new AxisRGB();
+        solids.add(aRGB);
     }
 
     public void render() {
