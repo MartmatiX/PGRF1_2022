@@ -1,30 +1,26 @@
 package render;
 
+import rasterize.FilledLineRasterizer;
 import solids.Solid;
 import transforms.Mat4;
 import transforms.Mat4Identity;
 import transforms.Point3D;
 import transforms.Vec3D;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class WireRenderer {
 
-    private BufferedImage img;
+    private final FilledLineRasterizer lineRasterizer;
+    private final BufferedImage img;
     private Mat4 view;
-    private Mat4 proj;
+    private final Mat4 proj;
 
-    public void setBufferedImage(BufferedImage img) {
+    public WireRenderer(FilledLineRasterizer lineRasterizer, BufferedImage img, Mat4 view, Mat4 proj){
+        this.lineRasterizer = lineRasterizer;
         this.img = img;
-    }
-
-    public void setView(Mat4 view) {
         this.view = view;
-    }
-
-    public void setProj(Mat4 proj) {
         this.proj = proj;
     }
 
@@ -61,7 +57,8 @@ public class WireRenderer {
                 }
 
                 if (point1.dehomog().isPresent()) {
-                    vectorB = point2.dehomog().get();
+                    if (point2.dehomog().isPresent())
+                        vectorB = point2.dehomog().get();
                 }
 
                 assert vectorA != null;
@@ -72,9 +69,7 @@ public class WireRenderer {
                 int x2 = (int) ((1 + vectorB.getX()) * (img.getWidth() - 1) / 2);
                 int y2 = (int) ((1 - vectorB.getY()) * (img.getHeight() - 1) / 2);
 
-                Graphics g = img.getGraphics();
-                g.setColor(new Color(0xffff));
-                g.drawLine(x1, y1, x2, y2);
+                lineRasterizer.drawLine(x1, y1, x2, y2);
             }
         }
     }
@@ -85,5 +80,8 @@ public class WireRenderer {
         }
     }
 
+    public void setView(Mat4 view){
+        this.view = view;
+    }
 
 }
