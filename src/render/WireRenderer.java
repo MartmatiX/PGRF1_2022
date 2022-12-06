@@ -17,7 +17,7 @@ public class WireRenderer {
     private Mat4 view;
     private final Mat4 proj;
 
-    public WireRenderer(FilledLineRasterizer lineRasterizer, BufferedImage img, Mat4 view, Mat4 proj, Mat4 model) {
+    public WireRenderer(FilledLineRasterizer lineRasterizer, BufferedImage img, Mat4 view, Mat4 proj) {
         this.lineRasterizer = lineRasterizer;
         this.img = img;
         this.view = view;

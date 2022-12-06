@@ -1,9 +1,7 @@
 import rasterize.FilledLineRasterizer;
 import rasterize.RasterBufferImage;
 import render.WireRenderer;
-import solids.AxisRGB;
-import solids.Cube;
-import solids.Solid;
+import solids.*;
 import transforms.*;
 
 import javax.swing.*;
@@ -18,15 +16,23 @@ public class Controller3D {
     private final WireRenderer wireRenderer;
     private Mat4 model = new Mat4Identity();
 
-    private Point2D mousePos = new Point2D(0, 0);
+    private int flag = 1;
+
+    private Point2D mousePos;
 
     private final List<Solid> solids = new ArrayList<>();
+
+    Cube c1 = new Cube();
+    AxisRGB aRGB = new AxisRGB();
+    Prism p1 = new Prism();
+    Octahedron o1 = new Octahedron();
 
     // Kamera
     Camera camera = new Camera(new Vec3D(0, 0, 0), 0.1, -0.2, 1, true);
     private final double CAMERA_SPEED = 1;
 
     public Controller3D(int width, int height) {
+        solids.add(aRGB);
 
         // Frame + Panel
         JFrame frame = new JFrame();
@@ -69,7 +75,29 @@ public class Controller3D {
                         System.out.println("Goodbye!\n");
                         System.exit(0);
                     }
+                    case KeyEvent.VK_1 -> flag = 1;
+                    case KeyEvent.VK_2 -> flag = 2;
+                    case KeyEvent.VK_M -> {
+                        solids.add(c1);
+                        solids.add(p1);
+                        solids.add(o1);
+                        new Mat4Identity();
+                    }
+                    case KeyEvent.VK_C -> resetAll();
+                    case KeyEvent.VK_O -> {
+                        solids.clear();
+                        solids.add(o1);
+                    }
+                    case KeyEvent.VK_P -> {
+                        solids.clear();
+                        solids.add(p1);
+                    }
+                    case KeyEvent.VK_K -> {
+                        solids.clear();
+                        solids.add(c1);
+                    }
                 }
+                solids.add(aRGB);
                 render();
             }
         });
@@ -88,37 +116,44 @@ public class Controller3D {
             render();
         });
 
-        panel.addMouseMotionListener(new MouseAdapter() {
+        panel.addMouseListener(new MouseAdapter() {
             @Override
-            public void mouseDragged(MouseEvent e) {
-                super.mouseDragged(e);
-                double dx = e.getX() - mousePos.getX();
-                double dy = e.getY() - mousePos.getY();
-
-                camera = camera.addAzimuth((dx) * Math.PI / 360);
-                camera = camera.addZenith((dy) * Math.PI / 360);
-
+            public void mousePressed(MouseEvent e) {
+                super.mousePressed(e);
                 mousePos = new Point2D(e.getX(), e.getY());
+                panel.addMouseMotionListener(new MouseAdapter() {
+                    @Override
+                    public void mouseDragged(MouseEvent f) {
+                        super.mouseDragged(f);
+                        double dx = f.getX() - mousePos.getX();
+                        double dy = f.getY() - mousePos.getY();
 
-                render();
+                        switch (flag) {
+                            case 1 -> {
+                                camera = camera.addAzimuth(-(dx) * Math.PI / 360);
+                                camera = camera.addZenith(-(dy) * Math.PI / 360);
+
+                                mousePos = new Point2D(f.getX(), f.getY());
+                            }
+                            case 2 -> {
+                                Mat4 rot = new Mat4RotXYZ(0, (-(dy) * 0.0002), (-(dx) * 0.0002));
+                                model = model.mul(rot);
+                            }
+                        }
+                        render();
+                    }
+                });
             }
         });
 
-        // CV 3 ops
         FilledLineRasterizer filledLineRasterizer = new FilledLineRasterizer(raster);
-        wireRenderer = new WireRenderer(filledLineRasterizer, raster.getImg(), camera.getViewMatrix(), new Mat4OrthoRH(20, 20, 0.1, 200), model);
-
-        Cube c1 = new Cube();
-        solids.add(c1);
-
-        AxisRGB aRGB = new AxisRGB();
-        solids.add(aRGB);
+        wireRenderer = new WireRenderer(filledLineRasterizer, raster.getImg(), camera.getViewMatrix(), new Mat4OrthoRH(20, 20, 0.1, 200));
     }
 
     public void render() {
         clearCanvas();
         wireRenderer.setView(camera.getViewMatrix());
-        wireRenderer.renderScene(solids, model);
+        wireRenderer.renderScene(solids, this.model);
         present();
     }
 
@@ -135,5 +170,11 @@ public class Controller3D {
 
     public void clearCanvas() {
         raster.clear();
+    }
+
+    public void resetAll(){
+        solids.clear();
+        camera = new Camera(new Vec3D(0, 0, 0), 0.1, -0.2, 1, true);
+        solids.add(aRGB);
     }
 }
