@@ -15,14 +15,22 @@ public class WireRenderer {
     private final FilledLineRasterizer lineRasterizer;
     private final BufferedImage img;
     private Mat4 view;
-    private final Mat4 proj;
+    private Mat4 projection;
 
-    public WireRenderer(FilledLineRasterizer lineRasterizer, BufferedImage img, Mat4 view, Mat4 proj) {
+    public WireRenderer(FilledLineRasterizer lineRasterizer, BufferedImage img, Mat4 projection) {
         this.lineRasterizer = lineRasterizer;
         this.img = img;
-        this.view = view;
-        this.proj = proj;
+        this.projection = projection;
     }
+
+    public void setView(Mat4 view) {
+        this.view = view;
+    }
+
+    public void setProjection(Mat4 projection){
+        this.projection = projection;
+    }
+
 
     public void renderSolid(Solid solid, Mat4 model) {
         if (solid.isTransferable()) {
@@ -31,7 +39,7 @@ public class WireRenderer {
             model = new Mat4Identity();
         }
 
-        final Mat4 finalTransform = model.mul(view).mul(proj);
+        final Mat4 finalTransform = model.mul(view).mul(projection);
 
         for (int i = 0; i < solid.getIb().size(); i = i + 2) {
             int index1 = solid.getIb().get(i);
@@ -71,10 +79,6 @@ public class WireRenderer {
         for (Solid solid : solids) {
             renderSolid(solid, model);
         }
-    }
-
-    public void setView(Mat4 view) {
-        this.view = view;
     }
 
 }

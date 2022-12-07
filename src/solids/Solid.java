@@ -48,7 +48,7 @@ public abstract class Solid {
         return this.colors.size();
     }
 
-    void addColors(Integer... colors) {
+    public void addColors(Integer... colors) {
         this.colors.addAll(Arrays.asList(colors));
     }
 

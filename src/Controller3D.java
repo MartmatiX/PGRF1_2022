@@ -20,12 +20,17 @@ public class Controller3D {
 
     private Point2D mousePos;
 
+    private Mat4 projection = new Mat4OrthoRH(20, 20, 0.1, 200);
+
     private final List<Solid> solids = new ArrayList<>();
 
     Cube c1 = new Cube();
     AxisRGB aRGB = new AxisRGB();
     Prism p1 = new Prism();
     Octahedron o1 = new Octahedron();
+    Solid ferguson = new CubicTranslation(Cubic.FERGUSON, 0xff0000);
+    Solid coons = new CubicTranslation(Cubic.COONS, 0x00ff00);
+    Solid bezier = new CubicTranslation(Cubic.BEZIER, 0x0000ff);
 
     // Kamera
     Camera camera = new Camera(new Vec3D(0, 0, 0), 0.1, -0.2, 1, true);
@@ -81,7 +86,11 @@ public class Controller3D {
                         solids.add(c1);
                         solids.add(p1);
                         solids.add(o1);
+                        solids.add(ferguson);
+                        solids.add(coons);
+                        solids.add(bezier);
                         new Mat4Identity();
+
                     }
                     case KeyEvent.VK_C -> resetAll();
                     case KeyEvent.VK_O -> {
@@ -95,6 +104,18 @@ public class Controller3D {
                     case KeyEvent.VK_K -> {
                         solids.clear();
                         solids.add(c1);
+                    }
+                    case KeyEvent.VK_F -> {
+                        solids.clear();
+                        solids.add(ferguson);
+                    }
+                    case KeyEvent.VK_B -> {
+                        solids.clear();
+                        solids.add(bezier);
+                    }
+                    case KeyEvent.VK_H -> {
+                        solids.clear();
+                        solids.add(coons);
                     }
                 }
                 solids.add(aRGB);
@@ -147,19 +168,19 @@ public class Controller3D {
         });
 
         FilledLineRasterizer filledLineRasterizer = new FilledLineRasterizer(raster);
-        wireRenderer = new WireRenderer(filledLineRasterizer, raster.getImg(), camera.getViewMatrix(), new Mat4OrthoRH(20, 20, 0.1, 200));
+        wireRenderer = new WireRenderer(filledLineRasterizer, raster.getImg(), new Mat4OrthoRH(20, 20, 0.1, 200));
     }
 
     public void render() {
         clearCanvas();
         wireRenderer.setView(camera.getViewMatrix());
+        wireRenderer.setProjection(projection);
         wireRenderer.renderScene(solids, this.model);
         present();
     }
 
     public void present() {
-        if (panel.getGraphics() != null)
-            panel.getGraphics().drawImage(raster.getImg(), 0, 0, null);
+        if (panel.getGraphics() != null) panel.getGraphics().drawImage(raster.getImg(), 0, 0, null);
     }
 
     public void start() {
@@ -168,11 +189,16 @@ public class Controller3D {
         panel.repaint();
     }
 
+    public void setCameraView(Mat4 projection) {
+        this.projection = projection;
+        render();
+    }
+
     public void clearCanvas() {
         raster.clear();
     }
 
-    public void resetAll(){
+    public void resetAll() {
         solids.clear();
         camera = new Camera(new Vec3D(0, 0, 0), 0.1, -0.2, 1, true);
         solids.add(aRGB);
