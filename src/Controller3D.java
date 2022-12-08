@@ -59,6 +59,46 @@ public class Controller3D {
 
         panel.setPreferredSize(new Dimension(width, height));
 
+        JLabel controls = new JLabel("<html>" +
+                "Rotation: 1, 2<br/>" +
+                "Zoom: MouseWheel<br/>" +
+                "Cube: K<br/>" +
+                "Prism: P<br/>" +
+                "Octahedron: O<br/>" +
+                "Clear: C<br/>" +
+                "Ferguson: F<br/>" +
+                "Coons: H<br/>" +
+                "Bezier: B<br/>" +
+                "Left: Numpad 4<br/>" +
+                "Right: Numpad 6<br/>" +
+                "Up: Numpad 8<br/>" +
+                "Down: Numpad 2<br/>" +
+                "Forward: Numpad 7<br/>" +
+                "Back: Numpad 1<br/>"
+                + "</html>");
+        controls.setForeground(new Color(255, 255, 255));
+        panel.add(controls, BorderLayout.WEST);
+
+        System.out.println("""
+                Controls
+                Rotation: 1, 2
+                Zoom: MouseWheel
+                Cube: K
+                Prism: P
+                Octahedron: O
+                Clear: C
+                Ferguson: F
+                Coons: H
+                Bezier: B
+                Left: Numpad 4
+                Right: Numpad 6
+                Up: Numpad 8
+                Down: Numpad 2
+                Forward: Numpad 7
+                Back: Numpad 1
+
+                """);
+
         frame.add(panel, BorderLayout.CENTER);
         frame.pack();
         frame.setVisible(true);
@@ -90,7 +130,6 @@ public class Controller3D {
                         solids.add(coons);
                         solids.add(bezier);
                         new Mat4Identity();
-
                     }
                     case KeyEvent.VK_C -> resetAll();
                     case KeyEvent.VK_O -> {
@@ -117,6 +156,12 @@ public class Controller3D {
                         solids.clear();
                         solids.add(coons);
                     }
+                    case KeyEvent.VK_NUMPAD8 -> model = model.mul(new Mat4Transl(0, 0, 0.2));
+                    case KeyEvent.VK_NUMPAD2 -> model = model.mul(new Mat4Transl(0, 0, -0.2));
+                    case KeyEvent.VK_NUMPAD4 -> model = model.mul(new Mat4Transl(0, 0.2, 0));
+                    case KeyEvent.VK_NUMPAD6 -> model = model.mul(new Mat4Transl(0, -0.2, 0));
+                    case KeyEvent.VK_NUMPAD7 -> model = model.mul(new Mat4Transl(0.2, 0, 0));
+                    case KeyEvent.VK_NUMPAD1 -> model = model.mul(new Mat4Transl(-0.2, 0, 0));
                 }
                 solids.add(aRGB);
                 render();
