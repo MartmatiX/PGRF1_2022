@@ -2,9 +2,9 @@ package solids;
 
 import transforms.Point3D;
 
-public class AxisRGB extends Solid{
+public class AxisRGB extends Solid {
 
-    public AxisRGB(){
+    public AxisRGB() {
         transferable = false;
 
         vb.add(new Point3D(0, 0, 0));

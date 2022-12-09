@@ -17,7 +17,6 @@ public class Controller3D {
     private Mat4 model = new Mat4Identity();
 
     private int flag = 1;
-    private int cameraFlag = 1;
 
     private Point2D mousePos;
 
@@ -157,14 +156,8 @@ public class Controller3D {
                     case KeyEvent.VK_NUMPAD6 -> model = model.mul(new Mat4Transl(0, -0.2, 0));
                     case KeyEvent.VK_NUMPAD7 -> model = model.mul(new Mat4Transl(0.2, 0, 0));
                     case KeyEvent.VK_NUMPAD1 -> model = model.mul(new Mat4Transl(-0.2, 0, 0));
-                    case KeyEvent.VK_V -> {
-                        setCameraView(new Mat4PerspRH(Math.PI / 4, 1, 0.01, 100));
-                        cameraFlag = 2;
-                    }
-                    case KeyEvent.VK_G -> {
-                        setCameraView(new Mat4OrthoRH(20, 20, 0.1, 200));
-                        cameraFlag = 1;
-                    }
+                    case KeyEvent.VK_V -> setCameraView(new Mat4PerspRH(Math.PI / 4, 1, 0.01, 100));
+                    case KeyEvent.VK_G -> setCameraView(new Mat4OrthoRH(20, 20, 0.1, 200));
                 }
                 solids.add(aRGB);
                 render();
@@ -251,7 +244,6 @@ public class Controller3D {
         camera = new Camera(new Vec3D(0, 0, 0), 0.1, -0.2, 1, true);
         solids.add(aRGB);
         setCameraView(new Mat4OrthoRH(20, 20, 0.1, 200));
-        cameraFlag = 1;
         this.model = new Mat4Identity();
     }
 }

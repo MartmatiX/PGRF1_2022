@@ -21,7 +21,7 @@ public class Task1Malir {
             }
         } catch (Exception e) {
             System.out.println("Unexpected input, closing application!");
-            //System.out.println("Exception [" + e + "]");
+            System.out.println("Exception [" + e + "]");
             e.printStackTrace();
             System.exit(1);
         }

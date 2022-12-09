@@ -5,7 +5,6 @@ import transforms.Point3D;
 public class Cube extends Solid {
 
     public Cube() {
-        transferable = true;
 
         // Geometrie
         vb.add(new Point3D(-2, -2, -2));
