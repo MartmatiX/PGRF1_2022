@@ -59,7 +59,7 @@ public class Controller3D {
 
         panel.setPreferredSize(new Dimension(width, height));
 
-        JLabel controls = new JLabel("<html>" + "Movement: WASD QE</br>" + "Rotation: 1, 2<br/>" + "Zoom: MouseWheel<br/>" + "Cube: K<br/>" + "Prism: P<br/>" + "Octahedron: O<br/>" + "Clear: C<br/>" + "Ferguson: F<br/>" + "Coons: H<br/>" + "Bezier: B<br/>" + "Left: Numpad 4<br/>" + "Right: Numpad 6<br/>" + "Up: Numpad 8<br/>" + "Down: Numpad 2<br/>" + "Forward: Numpad 7<br/>" + "Back: Numpad 1<br/>" + "</html>");
+        JLabel controls = new JLabel("<html>" + "Movement: WASD QE</br>" + "Rotation: 1, 2<br/>" + "Zoom: MouseWheel<br/>" + "Cube: K<br/>" + "Prism: P<br/>" + "Octahedron: O<br/>" + "Clear: C<br/>" + "Ferguson: F<br/>" + "Coons: H<br/>" + "Bezier: B<br/>" + "Left: Numpad 4<br/>" + "Right: Numpad 6<br/>" + "Up: Numpad 8<br/>" + "Down: Numpad 2<br/>" + "Forward: Numpad 7<br/>" + "Back: Numpad 1<br/>" + "Perspective Camera: V</br>" + "Rectangular Camera: G</br>" + "</html>");
         controls.setForeground(new Color(255, 255, 255));
         panel.add(controls, BorderLayout.WEST);
 
@@ -81,7 +81,8 @@ public class Controller3D {
                 Down: Numpad 2
                 Forward: Numpad 7
                 Back: Numpad 1
-
+                Perspective camera: V
+                Rectangular camera: G
                 """);
 
         frame.add(panel, BorderLayout.CENTER);

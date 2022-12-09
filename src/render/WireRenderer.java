@@ -51,6 +51,9 @@ public class WireRenderer {
             point1 = point1.mul(finalTransform);
             point2 = point2.mul(finalTransform);
 
+            if (point1.getW() < 0) break;
+            if (point2.getW() < 0) break;
+
             Vec3D vectorA = null;
             Vec3D vectorB = null;
 
