@@ -41,7 +41,7 @@ public class WireRenderer {
 
         final Mat4 finalTransform = model.mul(view).mul(projection);
 
-        for (int i = 0; i < solid.getIb().size(); i = i + 2) {
+        for (int i = 0; i < solid.getIb().size(); i +=2) {
             int index1 = solid.getIb().get(i);
             int index2 = solid.getIb().get(i + 1);
 
